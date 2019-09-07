@@ -3,11 +3,16 @@
 
 ## 插件实现流程
 1. 配置:json或object
+
 2. 初始化:
-2.1 浏览器是否支持localforage,不支持的话,直接创建`<script>,<css>`等标签.
-2.2 对比`localforage`的`autoload_base('version','domain')`,插入或更新并清理`localforage`
-2.3 同步或异步的按参数全量或增量载入css/js/img到指定的键值中
-2.4 读取内容并回调.
+
+ 2.1 浏览器是否支持localforage,不支持的话,直接创建`<script>,<css>`等标签.
+
+ 2.2 对比`localforage`的`autoload_base('version','domain')`,插入或更新并清理`localforage`
+
+ 2.3 同步或异步的按参数全量或增量载入css/js/img到指定的键值中
+
+ 2.4 读取内容并回调.
 
 
 ## 概念
@@ -21,15 +26,17 @@
 [回调名称] //选填,仅限英文数字._-
 主路径或url,后备1路径或url,后备2路径或url... //以此类推,路径时无需后缀,test/jq.js可写成test/jq
 ```
+
 **统一配置示例**:
-```json
+```
 'jquery': '[js.v3.01][callback]test/jq,http://apps.bdimg.com/libs/jqueryui/1.9.2/jquery-ui.min.js',
 'jquery': '[js.v3.01]test/jq,http://apps.bdimg.com/libs/jqueryui/1.9.2/jquery-ui.min.js',
 'jquery': '[js]test/jq',
 'jquery': '[js]http://apps.bdimg.com/libs/jqueryui/1.9.2/jquery-ui.min.js'
 ```
+
 **独立配置示例**:
-```json
+```
 '[jquery][js.v3.01][callback]test/jq,http://apps.bdimg.com/libs/jqueryui/1.9.2/jquery-ui.min.js',
 '[jquery][js.v3.01]test/jq,http://apps.bdimg.com/libs/jqueryui/1.9.2/jquery-ui.min.js',
 '[jquery][js]test/jq',
@@ -42,7 +49,7 @@
 
 ## 初始化配置
 
-```json
+```
 //
 {
   'version': 'v1.0',//必填
@@ -68,7 +75,7 @@
 > 流程:配置>初始化>加载
 
 **1.配置>初始化**
-```js
+```
 //初始化
 autoload.init({
   'version': 'v1.0',
