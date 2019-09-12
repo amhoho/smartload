@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{$title}</title>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link type="text/css" rel="stylesheet" href="smartload/base.css"/>
+<!--base.css作用:通过该文件解决因css无任何加载前的页面闪动-->
+
+</head>
+<body>
+<p><b>测试前：请修改/smartload/entrance.js中的`http://127.0.0.1/test`为页面所在域名路径</b></p>
+<p>本文采用jquery，jquery.ui，jquery.cookie，jquery-ui.css等四个文件作为加载示范，在console中具体显示相关结果。</p>
+<p>jquery-ui.css中均换成了_domain.img_</p>
+<p></p>
+<p>jquery 测试:</p>
+<div id='jquery_test'></div>
+<p></p>
+<p>jquery ui 测试:</p>
+<div id='progressbar_test'></div>
+<p></p>
+<p>jquery cookie测试:</p>
+<div id='cookie_test'></div>
+<script type='text/javascript' src='smartload/entrance.js?02'></script>
+</body>
+</html>

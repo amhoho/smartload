@@ -1,53 +1,33 @@
+/*版权：@amhoho http://github.com/amhoho/smartload*/
 /*
-解释:
-1.所有域名均不要以'/'结尾.资源必须可跨域.
-2.自适应版本:v1=不支持缓存的浏览器如ie8-,v2=不支持async如ie8+,ff52-,chrome55-等,v3=支持 async如ff52+,chrome55+
-3.命令行:
-格式:[plugin_name][类型.版本信息][回调方法]路径或url
-其中:
-[plugin_name]:唯一键,切勿重复,选填
-//若已有对象的键名,则可不填如:'plugin_name':'[css].....';
-[类型.版本信息]:类型必填.如css或js,版本信息选填
-//例如[css]或[css.v5.0],5.0这样的版本如果改动了,会引起该文件的增量更新.
-[回调方法名]:选填,载入url后的回调
-//例如[callback]
-路径或url:必填,路径则不包括后缀名,url则完整地址
-//例如[test]=地址为/test.js
-//[http:127.0.0.1/abc.js]
-//[test,http:127.0.0.1/abc.js]//逗号之后为后备地址,可多个
-4.命令包:
-参见smartloadConfig.list;
-_preload预加载项
+使用注意:
+1.所有域名均不要以'/'结尾.资源建议可跨域.
 */
 //localStorage.clear();//调试
 var smartloadConfig={
 entrance: {//入口地址:
 file:'[js.v0.6.1]smartload/{$}',//命令行,{$}会被自动替换为自适应版本.
-debug:'false'//是否打开调试,默认false;
+debug:'true'//是否打开调试,默认false;
 },
 config:{//配置信息:更新时将清理客户端缓存,进行全量更新.
 name:'yourname',//必填,自定义的本地缓存库名称,
-version:'v1.0',//必填,改动则全量更新
+version:'v1.2',//必填,改动则全量更新
 domain:{//域名,必填,格式如下,domain.css和domain.js必填.其余任意
 //例如加了'test:'http://abc.com'之后.如被缓存的文件中存在`_domain.test_`则会被替换.
-css:'http://127.0.0.1',//或http://www.test.com/css等
-js:'http://127.0.0.1',//如果文件中存在_domain.css_,_domain.js_,_domain.img_将被替换为该值
-img:'https://css.test.com'
+css:'http://127.0.0.1/test',//或http://www.test.com/css等
+js:'http://127.0.0.1/test',//如果文件中存在_domain.css_,_domain.js_,_domain.img_将被替换为该值
+img:'http://code.jquery.com/ui/1.10.4/themes/smoothness'
 }
 },
 list:{//命令包,选填:格式如下,_preload是系统内置值
-_preload:[//预加载项,true=全部异步加载,false=按顺序加载.数组
-//数组示范:
-//['abc','hello']=依次加载abc和hello
-//['abc',['ni','hao']]//依次加载abc后并行加载ni,hao
-//示范['jquery',['jquery.form','jquery.cookie'],'myformcode','mycookiecode']
-['_a'],['_d'],['_b','_c']
-],
+_preload:['jquery',['test_jquery','jquery_ui','jquery_ui_css','jquery_cookie'],'test_ui_and_cookie'],
 //命令行
-_a: '[js.v0.8.1][hello]test,https://test.com/a002.js',//如果项目不考虑ie浏览器,请忽略该项
-_b: '[js.v0.1.0]test,http://127.0.0.1/b002.js',
-_c: '[js.v0.1.0]test,http://127.0.0.1/c002.js',
-_d: '[js.v0.1.0]test,http://127.0.0.1/d002.js'
+test_jquery: '[js.v0.1.1]test/02.test.jquery',
+jquery: '[js.v3.4.1]test/01.jquery-3.4.1.min',//如果项目不考虑ie浏览器,请忽略该项
+jquery_ui: '[js.v1.12.1]test/02.jquery-ui.min',
+jquery_ui_css: '[css.v1.0.1]test/jquery-ui',
+jquery_cookie: '[js.1.4.1]test/02.jquery.cookie',
+test_ui_and_cookie: '[js.v1.0.01]test/03.test.ui.and.cookie'
 }
 };
 
@@ -70,7 +50,14 @@ me.lsKeys(me.prefix,true);//清除非本前缀的内容,避免爆满.
 if(variable.entrance.debug=='false'||variable.entrance.debug==false){me.debug=false;}else{me.debug=true;};
 me.config=variable.config;//配置
 me.list=variable["v"+me.version+"_list"]?variable["v"+me.version+"_list"]:variable.list;
-me.doms=[];//初始化已加载的dom
+me.doms=[];//初始化已加载的doms
+//对象去重
+var domainsKey=Object.keys(variable.config.domain);
+domainsKey?me.domainregs=new RegExp('_domain.'+domainsKey.join('_|_domain.')+'_',"g"):me.domainregs='';
+delete domainsKey;
+
+//debug提示域名信息
+if(variable.entrance.debug){Object.keys(variable.config.domain).forEach(function(key){me.log(key+' domain: '+variable.config.domain[key],'info');});}
 //加载对应的版本文件
 cmdsInfo=me.formatUrls('smartload',variable.entrance.file.replace(/\{\$\}/g,'v'+me.version));//对应的file信息
 if(cmdsInfo=='fail'){me.log('配置错误','warn');return;};
@@ -82,7 +69,9 @@ me.downCmds(cmdsInfo);
 //兼容模式
 smartload.supportState=function(){var a;if(window.localStorage){a=!1;try{eval('async ()\x3d\x3e{}'),a=!0}catch(b){}a=a?3:2}else a=1;return a};
 //调试
-smartload.log=function(info,type){this.debug&&(type?console[type](info):console.log(info))};
+smartload.log=function(info,type){
+this.debug&&(type?console[type](info):console.log(info))
+};
 //下载正文
 smartload.downCmds=function(opt,init){
 var me=this,domopt={};
@@ -92,9 +81,12 @@ if(me.doms){
 if(me.doms.indexOf(opt.id)>-1||(opt.url!==undefined&&me.doms.indexOf(opt.url)>-1)){me.log('勿重复加载'+opt.id,'warn');return;};//防止重复
 };
 domopt={id:opt.id,type:opt.type,direct:opt.direct,version:opt.version};
+
 if(me.version>1){
 var lscon=me.ls('get',opt.id),lsversion=me.ls('get',opt.id+'_version');
-if(lscon!==undefined&&(lsversion==opt.version)){domopt.direct=false;domopt.con=lscon;opt.url='';me.appendDom(domopt);return;}else{me.ls('remove',opt.id);me.ls('remove',opt.id+'_version');};//加载或删除;
+
+if(lscon!==undefined&&(lsversion==opt.version)){domopt.direct=false;domopt.con=lscon;opt.url='';me.appendDom(domopt);
+return;}else{me.ls('remove',opt.id);me.ls('remove',opt.id+'_version');};//加载或删除;
 };
 me.curls(opt.urls,function(r){
 if(r.status==1){
@@ -176,10 +168,10 @@ xhr.onreadystatechange=function(){
       if (xhr.readyState !== 4){return;};
       var respone={args:args};respone.url=urls[0];
       if(xhr.status == 200 || xhr.status == 304) {
-respone.status=1;respone.con=xhr.responseText;
+respone.status=1;
+respone.con = me.domainregs?xhr.responseText.replace(me.domainregs,function(matched){return me.config.domain[matched.replace(/(^_domain.)|(_$)/g,"")];}):xhr.responseText;
 if(respone&&func){func.call(this,respone);};
-      }else{
-      
+}else{
 respone.status=0;
 var oldUrl=urls[0];
 urls.shift();//删除首个元素

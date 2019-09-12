@@ -1,10 +1,10 @@
 ## 版本
 
-smartload v1.01
+smartload v1.0
 
 ## 作用
 
-带有`重试`和`后备`模式(即1个js可多个地址,1地址下载失败后,重试2地址,3地址)的根据`css,js`等存入`localStorage`中。
+带有`重试`和`后备`模式(1个js可多个地址,1cdn地址下载失败后,重试2cdn地址,3地址)的把`css,js`等存入`localStorage`中。
 
 支持全量或增量更新,只要`ls`未被清空(如二次打开页面或清空浏览器缓存)时,则从`localStorage`中读取,省却请求,节省带宽,又提高响应速度.
 
@@ -75,34 +75,43 @@ smartload v1.01
 ## 配置写法
 
 ```
-{
+var smartloadConfig={
 entrance: {//入口地址:
-file:'[js.v0.1.1]smartload/{$}',//命令行,{$}会被自动替换为自适应版本.大版本v0.1.1为entrance的自定义版本
-debug:'false'//是否打开调试,默认false;
+file:'[js.v0.6.1]smartload/{$}',//命令行,{$}会被自动替换为自适应版本.
+debug:'true'//是否打开调试,默认false;
 },
-config:{//配置信息:修改后将全量更新或全部重缓.
+config:{//配置信息:更新时将清理客户端缓存,进行全量更新.
 name:'yourname',//必填,自定义的本地缓存库名称,
-version:'v1.0',//必填,改动则全量更新
-domain:{//域名,必填,格式如下,domain.css和domain.js必填.其余任意,
-//作用:例如所有被缓存的文件中存在`_domain.test_`均被替换,用于cdn或相对路径.
-css:'http://127.0.0.1',//或http://www.test.com/css等,替换缓存中的_domain.css_
-js:'http://127.0.0.1',//替换缓存中的_domain.js_
-img:'https://css.test.com'//替换缓存中的_domain.img_
+version:'v1.2',//必填,改动则全量更新
+domain:{//域名,必填,格式如下,domain.css和domain.js必填.其余任意
+//例如加了'test:'http://abc.com'之后.如被缓存的文件中存在`_domain.test_`则会被替换.
+css:'http://127.0.0.1/test',//或http://www.test.com/css等
+js:'http://127.0.0.1/test',//如果文件中存在_domain.css_,_domain.js_,_domain.img_将被替换为该值
+img:'http://code.jquery.com/ui/1.10.4/themes/smoothness'
 }
 },
-list:{//命令包,
-//_preload是系统内置值(选填),写法参见 配置基本写法:加载顺序
-_preload:[
-['_a'],['_d'],['_b','_c']
-],
-//命令行,写法参见 配置基本写法:文件加载
-_a: '[js.v0.8.1][hello]test,https://test.com/a002.js',
-_b: '[js.v0.1.0]test,http://127.0.0.1/b002.js',
-_c: '[js.v0.1.0]test,http://127.0.0.1/c002.js',
-_d: '[js.v0.1.0]test,http://127.0.0.1/d002.js'
+list:{//命令包,选填:格式如下,_preload是系统内置值
+_preload:['jquery',['test_jquery','jquery_ui','jquery_ui_css','jquery_cookie'],'test_ui_and_cookie'],
+//命令行
+test_jquery: '[js.v0.1.1]test/02.test.jquery',
+jquery: '[js.v3.4.1]test/01.jquery-3.4.1.min',//如果项目不考虑ie浏览器,请忽略该项
+jquery_ui: '[js.v1.12.1]test/02.jquery-ui.min',
+jquery_ui_css: '[css.v1.0.1]test/jquery-ui',
+jquery_cookie: '[js.1.4.1]test/02.jquery.cookie',
+test_ui_and_cookie: '[js.v1.0.01]test/03.test.ui.and.cookie'
 }
 };
 ```
+
+## 如何全部更新或局部更新某个js或css
+
+Q:全量更新？
+
+A:修改config.version.
+
+Q:增量更新？
+
+A:修改响应命令行的version，例如`js.v0.1.1`改成`js.v0.1.2`即可增量更新
 
 ## 使用范例
 
@@ -126,7 +135,7 @@ _d: '[js.v0.1.0]test,http://127.0.0.1/d002.js'
 
 `v2.js`:支持缓存但不支持`async`如:`ie8+`,`firefox v52-`,`chrome v55-`等。
 
-`v3.js`:支持缓存且支持`async如:`firefox v52+`,`chrome v55+`。
+`v3.js`:支持缓存且支持`async·如:`firefox v52+`,`chrome v55+`。
 
 版本号是向下兼容的,即 `v2.js`适用于 `v3.js`支持的浏览器。
 
@@ -136,9 +145,7 @@ _d: '[js.v0.1.0]test,http://127.0.0.1/d002.js'
 
 ## 测试效果:
 
-首次载入 `css` 和 `js` 累计请求 `18` 次的 `18` 个文件 `gzip`共 `800k` 的耗时 `750ms` 的页面.
 
-二次打开或清空浏览器缓存后仅 `24ms` 且仅请求 `2` 次( `base.css` 和 `entrance.js` ).
 
 ## 未来计划
 
@@ -148,6 +155,6 @@ _d: '[js.v0.1.0]test,http://127.0.0.1/d002.js'
 
 ## 授权许可
 
-采用MIT宽松许可协议，在保留开发版权说明的情况下运行个人使用或商用。
+采用MIT许可协议，在保留开发版权说明的情况下运行个人使用或商用。
 
 @amhoho
