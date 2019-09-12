@@ -2,6 +2,11 @@
 
 smartload v1.0
 
+## Demo
+[demo地址](https://amhoho.github.io/smartload/demo/)
+
+国内用户初次打开时因github原因可能较慢，但也正方便了二次和清空缓存后的测试。
+
 ## 作用
 
 带有`重试`和`后备`模式(1个js可多个地址,1cdn地址下载失败后,重试2cdn地址,3地址)的把`css,js`等存入`localStorage`中。
