@@ -22,7 +22,7 @@ img:'http://code.jquery.com/ui/1.10.4/themes/smoothness'
 list:{//命令包,选填:格式如下,_preload是系统内置值
 _preload:['jquery',['test_jquery','jquery_ui','jquery_ui_css','jquery_cookie'],'test_ui_and_cookie'],
 //命令行
-test_jquery: '[js.v0.1.1]test/02.test.jquery',
+test_jquery: '[js.v0.1.1][test_function_name]test/02.test.jquery',
 jquery: '[js.v3.4.1]test/01.jquery-3.4.1.min',//如果项目不考虑ie浏览器,请忽略该项
 jquery_ui: '[js.v1.12.1]test/02.jquery-ui.min',
 jquery_ui_css: '[css.v1.0.1]test/jquery-ui',
@@ -250,3 +250,7 @@ return true;
 window.smartload=smartload;
 }(window, document));
 smartload.init(smartloadConfig);
+//test
+function test_function_name(a,b){
+console.log('test_function_name');
+}

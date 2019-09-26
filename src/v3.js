@@ -69,7 +69,7 @@ opt.id=opt.type+'_'+opt.id;
 domopt={id:opt.id,type:opt.type,direct:false,version:opt.version};
 if(me.version>1){
 var lscon=me.ls('get',opt.id),lsversion=me.ls('get',opt.id+'_version');
-if(lscon!==undefined&&(lsversion==opt.version)){domopt.direct=false;domopt.con=lscon;opt.url='';me.appendDom(domopt);if(opt.callback){var func=me.func(opt.callback);if('function'===typeof func){func.call(me,r);};};resolve(true);}else{me.ls('remove',opt.id);me.ls('remove',opt.id+'_version');//加载或删除;
+if(lscon!==undefined&&(lsversion==opt.version)){domopt.direct=false;domopt.con=lscon;opt.url='';me.appendDom(domopt);if(opt.callback){var func=me.func(opt.callback);if('function'===typeof func){func.call(me);};};resolve(true);}else{me.ls('remove',opt.id);me.ls('remove',opt.id+'_version');//加载或删除;
 me.curls(opt.urls,function(r){
 if(r.status==1){
 domopt.url=r.url;domopt.con=r.con;me.appendDom(domopt);
